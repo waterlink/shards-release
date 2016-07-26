@@ -156,6 +156,26 @@ module Shards::Release
       end
     end
 
+    describe GitCommitVersionBump do
+      command = -> { GitCommitVersionBump.new(version.call, executor).commit }
+
+      it "can commit version bump" do
+        shard_config = "version: 3.7.95"
+        executor = MockExecutor.new
+        expect(executed_commands).to eq([
+          "git commit -m \"Bump 3.7.95\""
+        ])
+      end
+
+      it "can commit version bump for other version" do
+        shard_config = "version: 4.3.1"
+        executor = MockExecutor.new
+        expect(executed_commands).to eq([
+          "git commit -m \"Bump 4.3.1\""
+        ])
+      end
+    end
+
     describe GitTag do
       command = -> { GitTag.new(version.call, executor).create }
 

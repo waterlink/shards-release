@@ -10,6 +10,7 @@ new_shard_config = bumper.bump
 File.write("shard.yml", new_shard_config.to_yaml)
 
 executor = StockExecutor.new
+GitCommitVersionBump.new(new_shard_config.version, executor).commit
 GitTag.new(new_shard_config.version, executor).create
 GitPush.new(executor).push
 GitPushTags.new(executor).push

@@ -101,6 +101,15 @@ module Shards::Release
     abstract def execute(command)
   end
 
+  class GitCommitVersionBump
+    def initialize(@version : String, @executor : Executor)
+    end
+
+    def commit
+      @executor.execute("git commit -m \"Bump #{@version}\"")
+    end
+  end
+
   class GitTag
     def initialize(@version : String, @executor : Executor)
     end
