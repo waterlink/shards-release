@@ -163,7 +163,7 @@ module Shards::Release
         shard_config = "version: 3.7.95"
         executor = MockExecutor.new
         expect(executed_commands).to eq([
-          "git commit -m \"Bump 3.7.95\""
+          "git commit -am \"Bump 3.7.95\""
         ])
       end
 
@@ -171,7 +171,7 @@ module Shards::Release
         shard_config = "version: 4.3.1"
         executor = MockExecutor.new
         expect(executed_commands).to eq([
-          "git commit -m \"Bump 4.3.1\""
+          "git commit -am \"Bump 4.3.1\""
         ])
       end
     end

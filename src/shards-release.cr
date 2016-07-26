@@ -106,7 +106,7 @@ module Shards::Release
     end
 
     def commit
-      @executor.execute("git commit -m \"Bump #{@version}\"")
+      @executor.execute("git commit -am \"Bump #{@version}\"")
     end
   end
 
