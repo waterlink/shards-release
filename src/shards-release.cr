@@ -130,7 +130,10 @@ module Shards::Release
 
   class StockExecutor < Executor
     def execute(command)
-      system(command)
+      puts "[EXECUTOR] #{command}"
+      unless system(command)
+        raise "[EXECUTOR] Command '#{command}' has failed"
+      end
     end
   end
 end
