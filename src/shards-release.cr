@@ -23,6 +23,10 @@ module Shards::Release
       part(2)
     end
 
+    def version
+      @value["version"].to_s
+    end
+
     def bump(new_version)
       new_config = @value.dup
       new_config.as_h["version"] = new_version
@@ -36,7 +40,7 @@ module Shards::Release
     end
 
     private def parts
-      @value["version"].to_s.split(".")
+      version.split(".")
     end
   end
 
@@ -90,6 +94,43 @@ module Shards::Release
       return Minor.new(shard_config) if name == "minor"
       return Major.new(shard_config) if name == "major"
       Patch.new(shard_config)
+    end
+  end
+
+  abstract class Executor
+    abstract def execute(command)
+  end
+
+  class GitTag
+    def initialize(@version : String, @executor : Executor)
+    end
+
+    def create
+      @executor.execute("git tag v#{@version}")
+    end
+  end
+
+  class GitPush
+    def initialize(@executor : Executor)
+    end
+
+    def push
+      @executor.execute("git push origin master")
+    end
+  end
+
+  class GitPushTags
+    def initialize(@executor : Executor)
+    end
+
+    def push
+      @executor.execute("git push --tags")
+    end
+  end
+
+  class StockExecutor < Executor
+    def execute(command)
+      system(command)
     end
   end
 end

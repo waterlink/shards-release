@@ -13,3 +13,15 @@ end
 def expect(value)
   Expecter.new(value)
 end
+
+class MockExecutor < Shards::Release::Executor
+  getter executed_commands
+
+  def initialize
+    @executed_commands = [] of String
+  end
+
+  def execute(command)
+    @executed_commands << command
+  end
+end

@@ -5,7 +5,13 @@ module Shards::Release
     shard_config = ""
     subject = nil
 
+    executor = MockExecutor.new
+    command = -> {}
+    executed_commands = -> { command.call; executor.executed_commands }
+
     shard_config_parsed = -> { ShardConfig.parse(shard_config) }
+    version = -> { shard_config_parsed.call.version }
+
     response = -> { subject.not_nil!.call.bump }
 
     major_part = -> { response.call.major_part }
@@ -140,6 +146,55 @@ module Shards::Release
       it "creates Major version bumper when name=major" do
         name = "major"
         expect(version_bumper).to be_a(Major)
+      end
+    end
+
+    describe ShardConfig do
+      it "has correct version" do
+        shard_config = "version: 7.11.27"
+        expect(version).to eq("7.11.27")
+      end
+    end
+
+    describe GitTag do
+      command = -> { GitTag.new(version.call, executor).create }
+
+      it "can create tag" do
+        shard_config = "version: 2.3.78"
+        executor = MockExecutor.new
+        expect(executed_commands).to eq([
+          "git tag v2.3.78"
+        ])
+      end
+
+      it "can create other tag" do
+        shard_config = "version: 7.21.5"
+        executor = MockExecutor.new
+        expect(executed_commands).to eq([
+          "git tag v7.21.5"
+        ])
+      end
+    end
+
+    describe GitPush do
+      command = -> { GitPush.new(executor).push }
+
+      it "can push" do
+        executor = MockExecutor.new
+        expect(executed_commands).to eq([
+          "git push origin master"
+        ])
+      end
+    end
+
+    describe GitPushTags do
+      command = -> { GitPushTags.new(executor).push }
+
+      it "can push tags" do
+        executor = MockExecutor.new
+        expect(executed_commands).to eq([
+          "git push --tags"
+        ])
       end
     end
   end
